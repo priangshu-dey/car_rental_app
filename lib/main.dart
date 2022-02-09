@@ -1,3 +1,4 @@
+import 'package:car_rental_app/screens/home_screen/home_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
 
         primarySwatch: Colors.blue,
       ),
-      home:
+      home:HomeScreen(),
     );
   }
 }
