@@ -1,4 +1,7 @@
+import 'package:car_rental_app/screens/home_screen/home_screen.dart';
+import 'package:car_rental_app/screens/splash_screen/splash_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:car_rental_app/routes.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,11 +14,18 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+<<<<<<< HEAD
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
       // home: Scaffold(),
+=======
+      debugShowCheckedModeBanner: true,
+      // home: SplashScreen(),
+      initialRoute: SplashScreen.routeName,
+      routes: routes,
+>>>>>>> e0df98224a54911172fbed9872df0c64db745293
     );
   }
 }
