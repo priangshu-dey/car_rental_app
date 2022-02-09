@@ -14,18 +14,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-<<<<<<< HEAD
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
       // home: Scaffold(),
-=======
-      debugShowCheckedModeBanner: true,
+      //      debugShowCheckedModeBanner: true,
       // home: SplashScreen(),
       initialRoute: SplashScreen.routeName,
       routes: routes,
->>>>>>> e0df98224a54911172fbed9872df0c64db745293
     );
   }
 }
