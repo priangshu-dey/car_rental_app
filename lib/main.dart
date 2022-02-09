@@ -1,4 +1,3 @@
-import 'package:car_rental_app/screens/home_screen/home_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -14,10 +13,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-
         primarySwatch: Colors.blue,
       ),
-      home:HomeScreen(),
+      // home: Scaffold(),
     );
   }
 }
