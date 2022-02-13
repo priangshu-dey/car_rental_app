@@ -1,3 +1,4 @@
+import 'package:car_rental_app/screens/home_screen/home_screen.dart';
 import 'package:car_rental_app/screens/sign_up_screen/sign_up_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -121,7 +122,7 @@ class InitState extends State<LoginScreen> {
             ),
             GestureDetector(
               //write code for onclick
-              onTap: () => {},
+              onTap: () => Navigator.pushNamed(context,HomeScreen.routeName),
               child: Container(
                 margin: EdgeInsets.only(
                   left: 20,
