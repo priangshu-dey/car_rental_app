@@ -1,12 +1,8 @@
-import 'package:car_rental_app/screens/home_screen/components/details.dart';
+import 'package:car_rental_app/screens/home_screen/home_screen.dart';
 import 'package:car_rental_app/screens/sign_up_screen/sign_up_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:car_rental_app/routes.dart';
 
 class LoginScreen extends StatefulWidget {
-  static String routeName = "/details";
-
-  const LoginScreen({Key? key}) : super(key: key);
   @override
   State<StatefulWidget> createState() => InitState();
 }
@@ -126,14 +122,7 @@ class InitState extends State<LoginScreen> {
             ),
             GestureDetector(
               //write code for onclick
-              onTap: ()  => {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => CarDetailScreen(),
-                  ),
-                ),
-              },
+              onTap: () => Navigator.pushNamed(context,HomeScreen.routeName),
               child: Container(
                 margin: EdgeInsets.only(
                   left: 20,
