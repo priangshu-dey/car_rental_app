@@ -3,6 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 class CarDetailScreen extends StatelessWidget {
+  static String routeName = "/details";
   const CarDetailScreen({Key? key}) : super(key: key);
 
   @override

@@ -1,3 +1,4 @@
+import 'package:car_rental_app/screens/home_screen/components/details.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -127,8 +128,14 @@ class Body extends StatelessWidget {
                                   height: 200,
                                   width: 350,
                                   child: InkWell(
-                                    onTap: () =>
-                                        Navigator.pushNamed(context, '/second'),
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => CarDetailScreen(),)
+                                        );
+
+                                    },
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(12),
                                       child: Image.network(
