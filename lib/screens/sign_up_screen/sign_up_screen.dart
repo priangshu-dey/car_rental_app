@@ -1,211 +1,361 @@
-import 'package:flutter/material.dart';
 
-class SignUpScreen extends StatefulWidget {
+
+import 'package:car_rental_app/constants.dart';
+import 'package:car_rental_app/model/user_model.dart';
+import 'package:car_rental_app/screens/home_screen/home_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
+class RegistrationScreen extends StatefulWidget {
+  static String routeName = "/registration";
+
+  const RegistrationScreen({Key? key}) : super(key: key);
+
   @override
-  State<StatefulWidget> createState() => InitState();
+  _RegistrationScreenState createState() => _RegistrationScreenState();
 }
 
-class InitState extends State<SignUpScreen> {
+class _RegistrationScreenState extends State<RegistrationScreen> {
+  final _auth = FirebaseAuth.instance;
+
+  // string for displaying the error Message
+  String? errorMessage;
+
+
+  // our form key
+  final _formKey = GlobalKey<FormState>();
+  // editing Controller
+  final firstNameEditingController = new TextEditingController();
+  final secondNameEditingController = new TextEditingController();
+  final emailEditingController = new TextEditingController();
+  final passwordEditingController = new TextEditingController();
+  final confirmPasswordEditingController = new TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-    return initWidget();
-  }
+    //first name field
+    final firstNameField = TextFormField(
+        autofocus: false,
+        controller: firstNameEditingController,
+        keyboardType: TextInputType.name,
+        validator: (value) {
+          RegExp regex = new RegExp(r'^.{3,}$');
+          if (value!.isEmpty) {
+            return ("First Name cannot be Empty");
+          }
+          if (!regex.hasMatch(value)) {
+            return ("Enter Valid name(Min. 3 Character)");
+          }
+          return null;
+        },
+        onSaved: (value) {
+          firstNameEditingController.text = value!;
+        },
+        textInputAction: TextInputAction.next,
+        decoration: InputDecoration(
+          prefixIcon: Icon(Icons.account_circle),
+          contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+          hintText: "First Name",
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ));
 
-  Widget initWidget() {
+    //second name field
+    final secondNameField = TextFormField(
+        autofocus: false,
+        controller: secondNameEditingController,
+        keyboardType: TextInputType.name,
+        validator: (value) {
+          if (value!.isEmpty) {
+            return ("Second Name cannot be Empty");
+          }
+          return null;
+        },
+        onSaved: (value) {
+          secondNameEditingController.text = value!;
+        },
+        textInputAction: TextInputAction.next,
+        decoration: InputDecoration(
+          prefixIcon: Icon(Icons.account_circle),
+          contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+          hintText: "Second Name",
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ));
+
+    //email field
+    final emailField = TextFormField(
+        autofocus: false,
+        controller: emailEditingController,
+        keyboardType: TextInputType.emailAddress,
+        validator: (value) {
+          if (value!.isEmpty) {
+            return ("Please Enter Your Email");
+          }
+          // reg expression for email validation
+          if (!RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]")
+              .hasMatch(value)) {
+            return ("Please Enter a valid email");
+          }
+          return null;
+        },
+        onSaved: (value) {
+          firstNameEditingController.text = value!;
+        },
+        textInputAction: TextInputAction.next,
+        decoration: InputDecoration(
+          prefixIcon: Icon(Icons.mail),
+          contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+          hintText: "Email",
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ));
+
+    //password field
+    final passwordField = TextFormField(
+        autofocus: false,
+        controller: passwordEditingController,
+        obscureText: true,
+        validator: (value) {
+          RegExp regex = new RegExp(r'^.{6,}$');
+          if (value!.isEmpty) {
+            return ("Password is required for login");
+          }
+          if (!regex.hasMatch(value)) {
+            return ("Enter Valid Password(Min. 6 Character)");
+          }
+        },
+        onSaved: (value) {
+          firstNameEditingController.text = value!;
+        },
+        textInputAction: TextInputAction.next,
+        decoration: InputDecoration(
+          prefixIcon: Icon(Icons.vpn_key),
+          contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+          hintText: "Password",
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ));
+
+    //confirm password field
+    final confirmPasswordField = TextFormField(
+        autofocus: false,
+        controller: confirmPasswordEditingController,
+        obscureText: true,
+        validator: (value) {
+          if (confirmPasswordEditingController.text !=
+              passwordEditingController.text) {
+            return "Password don't match";
+          }
+          return null;
+        },
+        onSaved: (value) {
+          confirmPasswordEditingController.text = value!;
+        },
+        textInputAction: TextInputAction.done,
+        decoration: InputDecoration(
+          prefixIcon: Icon(Icons.vpn_key),
+          contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+          hintText: "Confirm Password",
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ));
+
+    //signup button
+    final signUpButton = Material(
+      elevation: 5,
+      borderRadius: BorderRadius.circular(30),
+      color: const Color(0xffF5591F),
+      child: MaterialButton(
+          padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+          minWidth: MediaQuery.of(context).size.width,
+          onPressed: () {
+            signUp(emailEditingController.text, passwordEditingController.text);
+          },
+          child: Text(
+            "SignUp",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
+          )),
+    );
+
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-              height: 250,
-              decoration: BoxDecoration(
-                borderRadius:
-                    BorderRadius.only(bottomLeft: Radius.circular(90)),
-                color: const Color(0xffF5591F),
-                gradient: LinearGradient(
-                  colors: [
-                    (new Color(0xffF5591F)),
-                    (new Color(0xffF2861E)),
-                  ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
+      backgroundColor: Colors.white,
+      // appBar: AppBar(
+      //   backgroundColor: Colors.transparent,
+      //   elevation: 0,
+      //   leading: IconButton(
+      //     icon: Icon(Icons.arrow_back, color: Colors.red),
+      //     onPressed: () {
+      //       // passing this to our root
+      //       Navigator.of(context).pop();
+      //     },
+      //   ),
+      // ),
+      body: Center(
+
+        child: SingleChildScrollView(
+          child: Container(
+            color: Colors.white,
+
+
+            child: Form(
+              key: _formKey,
+              child: Column(
+                // mainAxisAlignment: MainAxisAlignment.center,
+                // crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+            height: 300,
+            decoration: BoxDecoration(
+              borderRadius:
+              BorderRadius.only(bottomLeft: Radius.circular(90)),
+              color: const Color(0xffF5591F),
+              gradient: LinearGradient(
+                colors: [
+                  (new Color(0xffF5591F)),
+                  (new Color(0xffF2861E)),
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
               ),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(top: 50),
-                      child: Image.asset("assets/images/tesla.png"),
-                      height: 150,
-                      width: 300,
+            ),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(top: 50),
+                    child: Image.asset("assets/images/tesla.png"),
+                    height: 150,
+                    width: 300,
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(right: 20, top: 10),
+                    alignment: Alignment.bottomRight,
+                    child: Text(
+                      "REGISTER",
+                      style: TextStyle(fontSize: 20, color: Colors.white),
                     ),
-                    Container(
-                      margin: EdgeInsets.only(right: 20, top: 10),
-                      alignment: Alignment.bottomRight,
-                      child: Text(
-                        "REGISTER",
-                        style: TextStyle(fontSize: 20, color: Colors.white),
-                      ),
-                    )
-                  ],
-                ),
+                  )
+                ],
               ),
             ),
-            Container(
-              margin: const EdgeInsets.only(left: 20, right: 20, top: 20),
-              padding: const EdgeInsets.only(right: 20, left: 20),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(50),
-                  color: Colors.grey[200],
-                  boxShadow: const [
-                    BoxShadow(
-                      offset: Offset(0, 10),
-                      blurRadius: 50,
-                      color: Color(0xffEEEEEE),
-                    )
-                  ]),
-              alignment: Alignment.center,
-              child: const TextField(
-                cursorColor: Color(0xffF5591F),
-                decoration: InputDecoration(
-                  icon: Icon(
-                    Icons.person,
-                    color: Color(0xffF5591F),
+            ),
+
+
+                  SizedBox(height: 45),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10,right: 10),
+                    child: firstNameField,
                   ),
-                  hintText: "Full Name",
-                  enabledBorder: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                ),
-              ),
-            ),
-            Container(
-              margin: const EdgeInsets.only(left: 20, right: 20, top: 20),
-              padding: const EdgeInsets.only(right: 20, left: 20),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(50),
-                  color: Colors.grey[200],
-                  boxShadow: const [
-                    BoxShadow(
-                      offset: Offset(0, 10),
-                      blurRadius: 50,
-                      color: Color(0xffEEEEEE),
-                    )
-                  ]),
-              alignment: Alignment.center,
-              child: const TextField(
-                cursorColor: Color(0xffF5591F),
-                decoration: InputDecoration(
-                  icon: Icon(
-                    Icons.home,
-                    color: Color(0xffF5591F),
+                  SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10,right: 10),
+                    child: secondNameField,
                   ),
-                  hintText: "Address",
-                  enabledBorder: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                ),
-              ),
-            ),
-            Container(
-              margin: const EdgeInsets.only(left: 20, right: 20, top: 20),
-              padding: const EdgeInsets.only(right: 20, left: 20),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(50),
-                  color: Colors.grey[200],
-                  boxShadow: const [
-                    BoxShadow(
-                      offset: Offset(0, 10),
-                      blurRadius: 50,
-                      color: Color(0xffEEEEEE),
-                    )
-                  ]),
-              alignment: Alignment.center,
-              child: const TextField(
-                cursorColor: Color(0xffF5591F),
-                decoration: InputDecoration(
-                  icon: Icon(
-                    Icons.phone,
-                    color: Color(0xffF5591F),
+                  SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10,right: 10),
+                    child: emailField,
                   ),
-                  hintText: "Phone Number",
-                  enabledBorder: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                ),
-              ),
-            ),
-            Container(
-              margin: const EdgeInsets.only(left: 20, right: 20, top: 20),
-              padding: const EdgeInsets.only(right: 20, left: 20),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(50),
-                  color: Colors.grey[200],
-                  boxShadow: const [
-                    BoxShadow(
-                      offset: Offset(0, 10),
-                      blurRadius: 50,
-                      color: Color(0xffEEEEEE),
-                    )
-                  ]),
-              alignment: Alignment.center,
-              child: const TextField(
-                obscureText: true,
-                cursorColor: Color(0xffF5591F),
-                decoration: InputDecoration(
-                  icon: Icon(
-                    Icons.vpn_key,
-                    color: Color(0xffF5591F),
+                  SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10,right: 10),
+                    child: passwordField,
                   ),
-                  hintText: " Password",
-                  enabledBorder: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                ),
+                  SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10,right: 10),
+                    child: confirmPasswordField,
+                  ),
+                  SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10,right: 10),
+                    child: signUpButton,
+                  ),
+                  SizedBox(height: 15),
+                ],
               ),
             ),
-            Container(
-              margin: const EdgeInsets.only(right: 20, top: 20),
-              padding: const EdgeInsets.only(right: 20, left: 20),
-              alignment: Alignment.centerRight,
-              child: GestureDetector(
-                child: const Text('Forget Password?'),
-                onTap: () => {},
-              ),
-            ),
-            GestureDetector(
-              //write code for onclick
-              onTap: () => {},
-              child: Container(
-                margin: EdgeInsets.only(left: 20, right: 20, top: 50),
-                padding: const EdgeInsets.only(left: 20, right: 20),
-                alignment: Alignment.center,
-                height: 54,
-                decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        (new Color(0xffF5591F)),
-                        (new Color(0xffF2861E)),
-                      ],
-                      begin: Alignment.centerLeft,
-                      end: Alignment.centerRight,
-                    ),
-                    borderRadius: BorderRadius.circular(50),
-                    boxShadow: const [
-                      BoxShadow(
-                        offset: Offset(0, 10),
-                        blurRadius: 50,
-                        color: Color(0xffEEEEEE),
-                      )
-                    ]),
-                child: const Text(
-                  "REGISTER",
-                  style: TextStyle(color: Colors.white, fontSize: 30),
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
+  void signUp(String email, String password) async {
+    if (_formKey.currentState!.validate()) {
+      try {
+        await _auth
+            .createUserWithEmailAndPassword(email: email, password: password)
+            .then((value) => {postDetailsToFirestore()})
+            .catchError((e) {
+          Fluttertoast.showToast(msg: e!.message);
+        });
+      } on FirebaseAuthException catch (error) {
+        switch (error.code) {
+          case "invalid-email":
+            errorMessage = "Your email address appears to be malformed.";
+            break;
+          case "wrong-password":
+            errorMessage = "Your password is wrong.";
+            break;
+          case "user-not-found":
+            errorMessage = "User with this email doesn't exist.";
+            break;
+          case "user-disabled":
+            errorMessage = "User with this email has been disabled.";
+            break;
+          case "too-many-requests":
+            errorMessage = "Too many requests";
+            break;
+          case "operation-not-allowed":
+            errorMessage = "Signing in with Email and Password is not enabled.";
+            break;
+          default:
+            errorMessage = "An undefined Error happened.";
+        }
+        Fluttertoast.showToast(msg: errorMessage!);
+        print(error.code);
+      }
+    }
+  }
+  postDetailsToFirestore() async {
+    // calling our firestore
+    // calling our user model
+    // sedning these values
+
+    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+    User? user = _auth.currentUser;
+
+    UserModel userModel = UserModel();
+
+    // writing all the values
+    userModel.email = user!.email;
+    userModel.uid = user.uid;
+    userModel.firstName = firstNameEditingController.text;
+    userModel.secondName = secondNameEditingController.text;
+
+    await firebaseFirestore
+        .collection("users")
+        .doc(user.uid)
+        .set(userModel.toMap());
+    Fluttertoast.showToast(msg: "Account created successfully :) ");
+
+    Navigator.pushAndRemoveUntil(
+        (context),
+        MaterialPageRoute(builder: (context) => HomeScreen()),
+            (route) => false);
+  }
 }
+

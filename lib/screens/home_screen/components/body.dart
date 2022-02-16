@@ -1,10 +1,19 @@
 import 'package:car_rental_app/screens/home_screen/components/details.dart';
+import 'package:car_rental_app/screens/login_screen/login_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class Body extends StatelessWidget {
+class Body extends StatefulWidget {
   const Body({Key? key}) : super(key: key);
 
+  @override
+  State<Body> createState() => _BodyState();
+}
+
+class _BodyState extends State<Body> {
+   //firebase
+  final _auth = FirebaseAuth.instance;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -12,26 +21,15 @@ class Body extends StatelessWidget {
         elevation: 0.0,
         systemOverlayStyle:
             const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.green,
         // backgroundColor: Color(),
         // title: Text("This is homeScreen"),
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 30.0),
-          child: IconButton(
-            onPressed: () => {},
-            icon: const Icon(
-              Icons.menu_rounded,
-              color: Colors.grey,
-              size: 20,
-            ),
-          ),
-        ),
         actions: [
           IconButton(
             onPressed: () => {},
             icon: const Icon(
               Icons.search_outlined,
-              color: Colors.grey,
+              color: Colors.white,
               size: 25,
             ),
           ),
@@ -39,7 +37,7 @@ class Body extends StatelessWidget {
             onPressed: () => {},
             icon: const Icon(
               Icons.location_on_rounded,
-              color: Colors.grey,
+              color: Colors.white,
               size: 25,
             ),
           ),
@@ -48,7 +46,56 @@ class Body extends StatelessWidget {
           ),
         ],
       ),
-      body: SingleChildScrollView(
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+
+              child: Row(
+             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Car Rental', style: TextStyle(
+                    fontSize: 20,fontWeight: FontWeight.bold,color: Colors.white
+                  ),
+
+
+                  ),
+                  Icon(Icons.car_rental,
+                  color: Colors.white,
+                  )
+                ],
+              ),
+
+              decoration: BoxDecoration(
+
+                color: Colors.green,
+              ),
+            ),
+
+            ListTile(
+              title: Text( 'Profile'),
+              onTap: () {
+
+              },
+              trailing: Icon(Icons.account_circle),
+            ),
+            ListTile(
+              title: Text("Log Out"),
+              trailing: Icon(Icons.logout),
+              onTap: () async{
+                await _auth.signOut();
+                Navigator.pushReplacement(
+                    context, MaterialPageRoute(builder: (context) => LoginScreen()));
+              },
+            ),
+
+          ],
+        ),
+        ),
+
+        body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
