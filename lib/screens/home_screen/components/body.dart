@@ -1,5 +1,6 @@
 import 'package:car_rental_app/screens/home_screen/components/details.dart';
 import 'package:car_rental_app/screens/login_screen/login_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,8 +13,10 @@ class Body extends StatefulWidget {
 }
 
 class _BodyState extends State<Body> {
-   //firebase
+  //firebase
   final _auth = FirebaseAuth.instance;
+  FirebaseFirestore operationFirestore = FirebaseFirestore.instance;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,51 +54,45 @@ class _BodyState extends State<Body> {
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-
               child: Row(
-             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Car Rental', style: TextStyle(
-                    fontSize: 20,fontWeight: FontWeight.bold,color: Colors.white
+                  Text(
+                    'Car Rental',
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
                   ),
-
-
-                  ),
-                  Icon(Icons.car_rental,
-                  color: Colors.white,
+                  Icon(
+                    Icons.car_rental,
+                    color: Colors.white,
                   )
                 ],
               ),
-
               decoration: BoxDecoration(
-
                 color: Colors.green,
               ),
             ),
-
             ListTile(
-              title: Text( 'Profile'),
-              onTap: () {
-
-              },
+              title: Text('Profile'),
+              onTap: () {},
               trailing: Icon(Icons.account_circle),
             ),
             ListTile(
               title: Text("Log Out"),
               trailing: Icon(Icons.logout),
-              onTap: () async{
+              onTap: () async {
                 await _auth.signOut();
-                Navigator.pushReplacement(
-                    context, MaterialPageRoute(builder: (context) => LoginScreen()));
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => LoginScreen()));
               },
             ),
-
           ],
         ),
-        ),
-
-        body: SingleChildScrollView(
+      ),
+      body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
@@ -134,7 +131,8 @@ class _BodyState extends State<Body> {
                   itemBuilder: (ctx, i) => Center(
                     child: Text(
                       "BMW",
-                      style: TextStyle(fontSize: 35, fontWeight: FontWeight.w600),
+                      style:
+                          TextStyle(fontSize: 35, fontWeight: FontWeight.w600),
                     ),
                   ),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -151,141 +149,182 @@ class _BodyState extends State<Body> {
               // ),
               SizedBox(
                 height: 530,
-                child: ListView.builder(
-                  itemCount: 5,
-                  itemBuilder: (context, index) => Center(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 15),
-                      child: Container(
-                        // color: Colors.redAccent,
-                        height: 400,
-                        width: 350,
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade200,
-                          // border: Border.all(width: 2, color: Colors.blueGrey),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Stack(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(15),
-                                  child: SizedBox(
-                                    height: 200,
-                                    width: 350,
-                                    child: InkWell(
-                                      onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => CarDetailScreen(),)
-                                          );
-
-                                      },
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(12),
-                                        child: Image.network(
-                                          'https://images.pexels.com/photos/2127733/pexels-photo-2127733.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Positioned(
-                                  top: 12,
-                                  right: 12,
-                                  child: IconButton(
-                                    onPressed: () => {},
-                                    icon: const Icon(Icons.favorite_rounded),
-                                    color: Colors.redAccent,
-                                  ),
-                                )
-                              ],
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(15.0),
-                              child: Row(
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: operationFirestore.collection('BMW').snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasError) {
+                      return Text('Something went wrong');
+                    }
+                    if (!snapshot.hasData) {
+                      return Center(child: CircularProgressIndicator());
+                    } else {
+                      final data = snapshot.data!.docs;
+                      return Expanded(
+                        child: ListView.builder(
+                            itemCount: data.length,
+                            itemBuilder: (context, index) {
+                              return Column(
                                 children: [
-                                  CircleAvatar(
-                                    foregroundImage: NetworkImage(
-                                        'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&h=650&w=940'),
-                                  ),
                                   Padding(
                                     padding: const EdgeInsets.symmetric(
-                                        horizontal: 15),
-                                    child: Text(
-                                      "Tom Marvolo Riddle",
-                                      style:
-                                          TextStyle(fontWeight: FontWeight.bold),
-                                    ),
-                                  )
+                                        vertical: 15),
+                                    child: Container(
+                                        // color: Colors.redAccent,
+                                        height: 400,
+                                        width: 350,
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey.shade200,
+                                          // border: Border.all(width: 2, color: Colors.blueGrey),
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                        child: Column(
+                                          children: [
+                                            Stack(
+                                              children: [
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(15),
+                                                  child: SizedBox(
+                                                    height: 200,
+                                                    width: 350,
+                                                    child: InkWell(
+                                                      onTap: () {
+                                                        Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  CarDetailScreen(),
+                                                            ));
+                                                      },
+                                                      child: ClipRRect(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(12),
+                                                        child: Image.network(
+                                                          data[index]
+                                                              .get("image"),
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                Positioned(
+                                                  top: 12,
+                                                  right: 12,
+                                                  child: IconButton(
+                                                    onPressed: () => {},
+                                                    icon: const Icon(
+                                                        Icons.favorite_rounded),
+                                                    color: Colors.redAccent,
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.all(15.0),
+                                              child: Row(
+                                                children: [
+                                                  CircleAvatar(
+                                                    foregroundImage: NetworkImage(
+                                                        'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&h=650&w=940'),
+                                                  ),
+                                                  Padding(
+                                                    padding: const EdgeInsets
+                                                            .symmetric(
+                                                        horizontal: 15),
+                                                    child: Text(
+                                                      "Tom Marvolo Riddle",
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 15),
+                                              child: Text(
+                                                data[index]
+                                                    .get("name")
+                                                    .toString(),
+                                                style: TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 15,
+                                            ),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 15),
+                                              child: Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons.star_rounded,
+                                                    color: Colors
+                                                        .amberAccent.shade700,
+                                                    size: 30,
+                                                  ),
+                                                  Text(
+                                                    data[index].get("rating"),
+                                                    style: TextStyle(
+                                                        fontSize: 20,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                  SizedBox(
+                                                    width: 8,
+                                                  ),
+                                                  Text(
+                                                    data[index].get("review"),
+                                                    style: TextStyle(
+                                                        color: Colors
+                                                            .blueGrey.shade400),
+                                                  ),
+                                                  SizedBox(
+                                                    width: 30,
+                                                  ),
+                                                  Text(
+                                                    "\$" +
+                                                        data[index]
+                                                            .get("perday"),
+                                                    style: TextStyle(
+                                                        fontSize: 23.5,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                  SizedBox(
+                                                    width: 6,
+                                                  ),
+                                                  Expanded(
+                                                    child: Text(
+                                                      'day',
+                                                      style: TextStyle(
+                                                          color: Colors.blueGrey
+                                                              .shade400),
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            )
+                                          ],
+                                        )),
+                                  ),
                                 ],
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 15),
-                              child: Text(
-                                "Lamborghini Huracán EVO",
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            SizedBox(
-                              height: 15,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 15),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.star_rounded,
-                                    color: Colors.amberAccent.shade700,
-                                    size: 30,
-                                  ),
-                                  Text(
-                                    '4.9',
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  SizedBox(
-                                    width: 8,
-                                  ),
-                                  Text(
-                                    '(2.5k Reviewes)',
-                                    style: TextStyle(
-                                        color: Colors.blueGrey.shade400),
-                                  ),
-                                  SizedBox(
-                                    width: 30,
-                                  ),
-                                  Text(
-                                    "\$120/",
-                                    style: TextStyle(
-                                        fontSize: 23.5,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  SizedBox(
-                                    width: 6,
-                                  ),
-                                  Expanded(
-                                    child: Text(
-                                      'day',
-                                      style: TextStyle(
-                                          color: Colors.blueGrey.shade400),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
+                              );
+                            }),
+                      );
+                    }
+                  },
                 ),
               )
             ],
