@@ -1,3 +1,4 @@
+import 'package:car_rental_app/screens/home_screen/home_screen.dart';
 import 'package:carousel_pro_nullsafety/carousel_pro_nullsafety.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -246,41 +247,7 @@ class CarDetailScreen extends StatelessWidget {
 
           ],
         ),
-
-
-
-
-   // ElevatedButton(
-   //        onTap: ()  {},
-   //        child: Container(
-   //          decoration: BoxDecoration(
-   //            color: Colors.blueGrey[900],
-   //            borderRadius: BorderRadius.circular(30),
-   //          ),
-   //          padding: const EdgeInsets.fromLTRB(100, 20, 100, 20),
-   //          child: const Text(
-   //            "Book Now",
-   //            style: TextStyle(
-   //                fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
-   //          ),
-   //        ),
-   //      ),
       ),
-      // floatingActionButton: TextButton(
-      //   onPressed: () => {},
-      //   child: Container(
-      //     decoration: BoxDecoration(
-      //       color: Colors.blueGrey[900],
-      //       borderRadius: BorderRadius.circular(30),
-      //     ),
-      //     padding: const EdgeInsets.fromLTRB(100, 20, 100, 20),
-      //     child: const Text(
-      //       "Book Now",
-      //       style: TextStyle(
-      //           fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
-      //     ),
-      //   ),
-      // ),
       floatingActionButton: Container(
         height: 60,
         width: 60,
@@ -288,7 +255,11 @@ class CarDetailScreen extends StatelessWidget {
           shape: BoxShape.circle,
               color: Colors.blueGrey
         ),
-        child: IconButton(onPressed: ()=> Navigator.pushNamed(context, '/home'),
+        child: IconButton(onPressed: (){
+          Navigator.push(
+            context,MaterialPageRoute(builder: (context)=>HomeScreen())
+          );
+        },
             icon: Icon(Icons.navigate_before_rounded,
             color: Colors.greenAccent,
               size: 35,

@@ -1,4 +1,5 @@
 
+import 'package:car_rental_app/constants.dart';
 import 'package:car_rental_app/screens/forgot_password/body.dart';
 import 'package:flutter/material.dart';
 class ForgotPasswordScreen extends StatelessWidget {
@@ -10,6 +11,7 @@ class ForgotPasswordScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text("Forgot Password"),
+        backgroundColor: kPrimaryColor,
       ),
       body: Body(),
     );

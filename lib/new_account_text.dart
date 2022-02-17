@@ -22,7 +22,13 @@ class NoAccountText extends StatelessWidget {
           style: TextStyle(fontSize: 16),
         ),
         GestureDetector(
-          onTap:() => Navigator.pushNamed(context, RegistrationScreen.routeName),
+          onTap:()
+          { Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => RegistrationScreen(),
+            ),
+          );},
           child: Text("Sign Up",
             style: TextStyle(fontSize: 16,
                 color: kPrimaryColor),
